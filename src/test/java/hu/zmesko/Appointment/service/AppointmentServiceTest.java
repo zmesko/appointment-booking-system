@@ -51,7 +51,7 @@ public class AppointmentServiceTest {
 
         List<Appointment> result = appointmentService.findAllAppointments();
 
-        assertEquals(1, result.size());
+        assertEquals(2, result.size());
         assertEquals("Filip", result.get(0).getName());
         assertEquals("John", result.get(1).getName());
         verify(appointmentRepository, times(1)).findAll();
