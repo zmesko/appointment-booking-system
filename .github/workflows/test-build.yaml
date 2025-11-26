@@ -1,0 +1,39 @@
+name: Hotel Booking System CI
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+      - improvement/*
+      - refactor/*
+      - bugfix/*
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "zulu"
+          cache: "maven"
+
+
+      - name: Build & run tests
+        run: mvn -B clean verify
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/

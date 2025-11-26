@@ -3,6 +3,9 @@ package hu.zmesko.Appointment.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,61 +17,50 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.zmesko.Appointment.model.Appointment;
-import hu.zmesko.Appointment.repository.RepositoryInterface;
+import hu.zmesko.Appointment.service.AppointmentService;
 
 @RestController
 @RequestMapping("/api/appointment")
 @CrossOrigin
 public class AppointmentContoller {
 
-    private final RepositoryInterface repository;
-
-    public AppointmentContoller(RepositoryInterface repository) {
-        this.repository = repository;
-    }
-
-    //Get last id
-    /*@Bean
-    CommandLineRunner commandLineRunner(){
-        return args ->{
-                if (repository.findLastId() == null) {
-                    id = 1;
-                }else {
-                    id = repository.findLastId().getId() + 1;
-                }
-        };
-    }*/
+    @Autowired
+    private AppointmentService appointmentService;
 
     @GetMapping("")
-    public List<Appointment> findAll() {
+    public List<Appointment> findAllAppointments() {
 
-        return repository.findAll();
+        return appointmentService.findAllAppointments();
     }
 
     @GetMapping("/{id}")
-    public Optional<Appointment> findById(@PathVariable int id) {
-        return repository.findById(id);
+    public Optional<Appointment> findAppointmentById(@PathVariable int id) {
+        return appointmentService.findAppointmentById(id);
     }
 
     @PostMapping("")
-    public void addApointment(@RequestBody Appointment appointment) {
-        repository.save(appointment);
+    public void addAppointment(@RequestBody Appointment appointment) {
+        appointmentService.addAppointment(appointment);
     }
 
     @PutMapping("/{id}")
-    public void updateById(@PathVariable int id, @RequestBody Appointment updatedAppointment) {
-        updatedAppointment.setId(id);
-        repository.save(updatedAppointment);
+    public ResponseEntity<String> updateAppointmentById(@PathVariable int id, @RequestBody Appointment updatedAppointment) {
+        try {
+            appointmentService.updateAppointmentById(id, updatedAppointment);
+            return new ResponseEntity<>("Appointment updated", HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>("Id not found!", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable int id) {
-
-        repository.deleteById(id);
+    public ResponseEntity<Void> deleteAppointmentById(@PathVariable int id) {
+    try {
+        appointmentService.deleteAppointmentById(id);
+        return ResponseEntity.ok().build();
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
     }
-
-    @GetMapping("/filter/{name}")
-    public List<Appointment> findByName(@PathVariable String name) {
-        return repository.findAllByNameContains(name);
-    }
+}
 }

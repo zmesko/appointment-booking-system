@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpSession;
 public class LoginController {
 
     @GetMapping("/login")
-    public String getDashboard(HttpSession session, Model model) {
+    public String login(HttpSession session, Model model) {
         String userRole = (String) session.getAttribute("userRole");
         model.addAttribute("role", userRole);
         return "login";

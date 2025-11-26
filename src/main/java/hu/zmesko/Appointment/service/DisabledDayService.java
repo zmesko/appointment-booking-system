@@ -18,11 +18,11 @@ public class DisabledDayService {
         return disabledDayRepository.findAll();
     }
 
-    public DisabledDay saveDisabledDay(DisabledDay disabledDay) {
+    public DisabledDay createDisabledDay(DisabledDay disabledDay) {
         return disabledDayRepository.save(disabledDay);
     }
 
-    public void deleteDisabledDay(Integer id) {
+    public void deleteDisabledDayById(Integer id) {
         disabledDayRepository.deleteById(id);
     }
 
