@@ -1,4 +1,4 @@
-name: Hotel Booking System CI
+name: Appointment Booking System CI
 
 on:
   push:
