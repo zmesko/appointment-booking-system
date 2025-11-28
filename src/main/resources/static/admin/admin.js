@@ -3,11 +3,14 @@ let clicked = null;
 let events;
 let disabledDays;
 
+const appointmentApiUrl = 'http://localhost:8080/api/appointment';
+const disabledDaytApiUrl = 'http://localhost:8080/api/disabledday';
+
 //get request from server (appointment)
 function fetchData() { 
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        const apiUrl = 'http://localhost:8080/api/appointment';
+        const apiUrl = appointmentApiUrl;
 
         xhr.open('GET', apiUrl, true);
 
@@ -39,7 +42,7 @@ fetchData()
 function fetchDataDisabledday() { 
   return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      const apiUrl = 'http://localhost:8080/api/disabledday';
+      const apiUrl = disabledDaytApiUrl;
 
       xhr.open('GET', apiUrl, true);
 
@@ -96,7 +99,7 @@ function disabledDayView() {
 }
 
 function disabledADay(date) {
-  fetch("http://localhost:8080/api/disabledday", {
+  fetch(disabledDaytApiUrl, {
     method: "POST",
     body: JSON.stringify({
         name: "admin",
@@ -113,7 +116,7 @@ function disabledADay(date) {
 
 function unlockDay(unlockdId){
   if(confirm('Biztos feloldja a napot?') == true){
-    fetch("http://localhost:8080/api/disabledday/" + unlockdId, {
+    fetch(disabledDaytApiUrl + "/" + unlockdId, {
       method: "DELETE",
       headers: {
       }
@@ -332,7 +335,7 @@ function saveEvent(bookedAppointment) {
   if (nameInput.value && emailInput.value) {
     nameInput.classList.remove('error');
 
-    fetch("http://localhost:8080/api/appointment", {
+    fetch(appointmentApiUrl, {
         method: "POST",
         body: JSON.stringify({
             name: nameInput.value,
@@ -361,7 +364,7 @@ function deleteEvent(bookedAppointment) {
       console.log(bookedRecord.id);
 
     if(confirm("Biztos törölni szeretné?") == true) {
-        fetch("http://localhost:8080/api/appointment/" + bookedRecord.id, {
+        fetch(appointmentApiUrl + "/" + bookedRecord.id, {
             method: "DELETE",
             headers: {
               "Content-type": "application/json; charset=UTF-8"
@@ -369,12 +372,14 @@ function deleteEvent(bookedAppointment) {
           })
             .then(response => {
                 if (!response.ok) {
+                    alert("Nem siekrült törölni!(részletek console logban)")
                     throw new Error('Network response was not ok');
                 }
                 return response;
             })
             .then(data => {
                 console.log('Resource deleted successfully:', data);
+                alert("Sikeres törlés!");
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);

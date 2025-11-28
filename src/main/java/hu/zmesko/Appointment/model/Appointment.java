@@ -7,8 +7,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Appointment {
 
     @Id
@@ -20,56 +28,4 @@ public class Appointment {
     private String mobileNumber;
     private LocalDateTime bookedAppointment;
     private LocalDateTime timeWhenBooked = LocalDateTime.now();
-
-    public Appointment() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobileNumber() {
-        return mobileNumber;
-    }
-
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
-    }
-
-    public LocalDateTime getBookedAppointment() {
-        return bookedAppointment;
-    }
-
-    public void setBookedAppointment(LocalDateTime bookedAppointment) {
-        this.bookedAppointment = bookedAppointment;
-    }
-
-    public LocalDateTime getTimeWhenBooked() {
-        return timeWhenBooked;
-    }
-
-    public void setTimeWhenBooked(LocalDateTime timeWhenBooked) {
-        this.timeWhenBooked = timeWhenBooked;
-    }
-
 }

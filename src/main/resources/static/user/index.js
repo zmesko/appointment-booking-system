@@ -2,11 +2,15 @@ let nav = 0;
 let events;
 let disabledDays;
 
+const appointmentApiUrl = 'http://localhost:8080/api/appointment';
+const disabledDaytApiUrl = 'http://localhost:8080/api/disabledday';
+
+
 //Get request from server
 function fetchDataAppointmnet() { 
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        const apiUrl = 'http://localhost:8080/api/appointment';
+        const apiUrl = appointmentApiUrl;
 
         xhr.open('GET', apiUrl, true);
 
@@ -38,7 +42,7 @@ fetchDataAppointmnet()
 function fetchDataDisabledday() { 
   return new Promise((resolve, reject) => {
        const xhr = new XMLHttpRequest();
-       const apiUrl = 'http://localhost:8080/api/disabledday';
+       const apiUrl = disabledDaytApiUrl;
 
       xhr.open('GET', apiUrl, true);
 
@@ -258,7 +262,7 @@ function saveEvent(bookedAppointment) {
   if (nameInput.value && emailInput.value) {
     nameInput.classList.remove('error');
 
-    fetch("http://localhost:8080/api/appointment", {
+    fetch(appointmentApiUrl, {
         method: "POST",
         body: JSON.stringify({
             name: nameInput.value,
