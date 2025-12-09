@@ -1,5 +1,6 @@
 package hu.zmesko.Appointment.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import hu.zmesko.Appointment.model.Appointment;
 import hu.zmesko.Appointment.service.AppointmentService;
 
+
 @RestController
 @RequestMapping("/api/appointment")
 @CrossOrigin
@@ -36,6 +38,11 @@ public class AppointmentContoller {
     @GetMapping("/{id}")
     public Optional<Appointment> findAppointmentById(@PathVariable int id) {
         return appointmentService.findAppointmentById(id);
+    }
+
+    @GetMapping("/year/{year}/month/{month}")
+    public List<LocalDateTime> findAppointmentByYearOfMonth(@PathVariable int year, @PathVariable int month) {
+        return appointmentService.findAppointmentByYearOfMonth(year, month);
     }
 
     @PostMapping("")

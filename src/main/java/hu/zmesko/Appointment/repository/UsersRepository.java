@@ -1,10 +1,13 @@
 package hu.zmesko.Appointment.repository;
 
-import org.springframework.data.repository.ListCrudRepository;
+import java.util.Optional;
 
-import hu.zmesko.Appointment.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UsersRepository extends ListCrudRepository<User, String> {
+import hu.zmesko.Appointment.model.AppUser;
 
-    User findByUsername(String username);
+
+
+public interface UsersRepository extends JpaRepository<AppUser, Long> {
+    Optional<AppUser> findByUsername(String username);
 }
