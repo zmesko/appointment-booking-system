@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import hu.zmesko.Appointment.model.Appointment;
 import hu.zmesko.Appointment.service.AppointmentService;
 
-
 @RestController
 @RequestMapping("/api/appointment")
 @CrossOrigin
