@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,18 +40,18 @@ import hu.zmesko.Appointment.service.AppointmentService;
 @ExtendWith(MockitoExtension.class)
 public class AppointmentControllerTest {
 
-        private Appointment appointment = new Appointment(1, 
-                                                        "Filip", 
-                                                        "filip@gmail.com", 
+        private Appointment appointment = new Appointment(1,
+                                                        "Filip",
+                                                        "filip@gmail.com",
                                                         "",
-                                                        LocalDateTime.now().plusDays(1), 
+                                                        LocalDateTime.of(2025, 10,12 , 10, 30),
                                                         LocalDateTime.now());
 
-        private Appointment appointment2 = new Appointment(2, 
-                                                        "John", 
-                                                        "john@gmail.com", 
+        private Appointment appointment2 = new Appointment(2,
+                                                        "John",
+                                                        "john@gmail.com",
                                                         "",
-                                                        LocalDateTime.now().plusDays(1), 
+                                                        LocalDateTime.of(2025, 10,12 , 10, 00),
                                                         LocalDateTime.now());
 
         @Autowired
@@ -63,7 +64,7 @@ public class AppointmentControllerTest {
                         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         @Test
-        public void testFindAll() throws Exception {
+        public void Should_ReturnAllAppointments_When_RepositoryContainsMultiplyAppointments() throws Exception {
                 List<Appointment> mockList = List.of(appointment, appointment2);
 
                 when(appointmentService.findAllAppointments()).thenReturn(mockList);
@@ -79,7 +80,7 @@ public class AppointmentControllerTest {
         }
 
         @Test
-        public void testFindById() throws Exception {
+        public void Should_ReturnAppointment_When_IdIsValid() throws Exception {
                 int id = 1;
 
                 when(appointmentService.findAppointmentById(id)).thenReturn(Optional.of(appointment));
@@ -94,7 +95,7 @@ public class AppointmentControllerTest {
         }
 
         @Test
-        public void testFindById_NotFound() throws Exception {
+        public void Should_ReturnNull_When_IdNotFound() throws Exception {
                 int id = 99;
 
                 when(appointmentService.findAppointmentById(id)).thenReturn(Optional.empty());
@@ -108,7 +109,7 @@ public class AppointmentControllerTest {
 
 
         @Test
-        public void testAddAppointment() throws Exception {
+        public void Should_AddAppointment_When_RequestIsValid() throws Exception {
 
                 String json = objectMapper.writeValueAsString(appointment);
 
@@ -121,7 +122,7 @@ public class AppointmentControllerTest {
         }
 
         @Test
-        public void testUpdateById() throws Exception {
+        public void Should_UpdateAppointment_When_IdIsValid() throws Exception {
 
                 int id = 1;
 
@@ -147,7 +148,7 @@ public class AppointmentControllerTest {
         }
 
         @Test
-        public void testUpdateById_NotFound() throws Exception {
+        public void Should_ThrowException_When_UpdatingNonExistingAppointment () throws Exception {
 
                 int id = 999;
 
@@ -173,7 +174,7 @@ public class AppointmentControllerTest {
         }
 
         @Test
-        public void testDeleteById() throws Exception {
+        public void Should_DeleteAppointment_When_IdIsValid() throws Exception {
                 int id = 1;
 
                 doNothing().when(appointmentService).deleteAppointmentById(id);
@@ -184,8 +185,8 @@ public class AppointmentControllerTest {
                 verify(appointmentService).deleteAppointmentById(id);
         }
 
-         @Test
-        public void testDeleteById_NotFound() throws Exception {
+        @Test
+        public void Should_ReturnBadRequest_When_DeleteByIdNotFound() throws Exception {
                 int id = 99;
 
                 doThrow(new RuntimeException("Id not found!")).when(appointmentService).deleteAppointmentById(id);
@@ -194,5 +195,36 @@ public class AppointmentControllerTest {
                         .andExpect(status().isBadRequest());
 
                 verify(appointmentService).deleteAppointmentById(id);
+        }
+
+        @Test
+        public void Should_ReturnAppointmentsLocalDate_When_GivenYearAndMonth() throws Exception {
+                int year = 2025;
+                int month = 10;
+
+                when(appointmentService.findAppointmentByYearOfMonth(year, month)).thenReturn(List.of(appointment.getBookedAppointment(), appointment2.getBookedAppointment()));
+
+                mockMvc.perform(get("/api/appointment/year/{year}/month/{month}", year, month))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("[*]", Matchers.everyItem(Matchers.startsWith(year + "-" + month))));
+
+                verify(appointmentService).findAppointmentByYearOfMonth(year, month);
+        }
+
+        @Test
+        public void Should_ReturnEmptyList_When_YearOrMonthNotCorrectOrNotExistied() throws Exception {
+                int invalidYear = 3333;
+                int invalidMonth = 14;
+
+                when(appointmentService.findAppointmentByYearOfMonth(invalidYear, invalidMonth)).thenReturn(List.of());
+
+                mockMvc.perform(get("/api/appointment/year/{year}/month/{month}", invalidYear, invalidMonth))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$.length()").value(0));
+
+                verify(appointmentService).findAppointmentByYearOfMonth(invalidYear, invalidMonth);
         }
 }

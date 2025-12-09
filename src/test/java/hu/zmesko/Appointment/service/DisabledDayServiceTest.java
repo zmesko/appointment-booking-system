@@ -1,19 +1,20 @@
 package hu.zmesko.Appointment.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import hu.zmesko.Appointment.model.DisabledDay;
-import hu.zmesko.Appointment.repository.DisabledDayRepository;
+import hu.zmesko.Appointment.repository.DisabledDaysRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class DisabledDayServiceTest {
@@ -22,7 +23,7 @@ public class DisabledDayServiceTest {
     DisabledDay disabledDay2 = new DisabledDay(2, "", LocalDate.of(2025, 11, 06));
 
     @Mock
-    private DisabledDayRepository disabledDayRepository;
+    private DisabledDaysRepository disabledDayRepository;
 
     @InjectMocks
     private DisabledDayService disabledDayService;

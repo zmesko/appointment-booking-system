@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.zmesko.Appointment.model.DisabledDay;
-import hu.zmesko.Appointment.repository.DisabledDayRepository;
+import hu.zmesko.Appointment.repository.DisabledDaysRepository;
 
 @Service
 public class DisabledDayService {
     @Autowired
-    private DisabledDayRepository disabledDayRepository;
+    private DisabledDaysRepository disabledDayRepository;
 
 
     public List<DisabledDay> getAllDisabledDays() {
