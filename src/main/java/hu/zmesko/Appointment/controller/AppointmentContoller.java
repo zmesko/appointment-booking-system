@@ -30,7 +30,6 @@ public class AppointmentContoller {
 
     @GetMapping("")
     public List<Appointment> findAllAppointments() {
-
         return appointmentService.findAllAppointments();
     }
 
@@ -44,7 +43,7 @@ public class AppointmentContoller {
         return appointmentService.findAppointmentByYearOfMonth(year, month);
     }
 
-    @PostMapping("")
+    @PostMapping("/booking")
     public void addAppointment(@RequestBody Appointment appointment) {
         appointmentService.addAppointment(appointment);
     }
