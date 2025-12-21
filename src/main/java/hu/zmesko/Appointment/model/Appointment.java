@@ -9,13 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,5 +27,6 @@ public class Appointment {
     private String email;
     private String mobileNumber;
     private LocalDateTime bookedAppointment;
+    @Builder.Default
     private LocalDateTime timeWhenBooked = LocalDateTime.now();
 }

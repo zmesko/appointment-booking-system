@@ -29,7 +29,7 @@ public class DisabledDayServiceTest {
     private DisabledDayService disabledDayService;
 
     @Test
-    public void testGetAllDisabledDays() {
+    public void Should_ReturnAllDisabledDays_When_RepositoryContainsMultiplyDisabledDay() {
 
         List<DisabledDay> mockList = List.of(disabledDay, disabledDay2);
         when(disabledDayRepository.findAll()).thenReturn(mockList);
@@ -43,14 +43,14 @@ public class DisabledDayServiceTest {
     }
 
     @Test
-    public void testSaveDisabledDay() {
+    public void Should_AddDisabledDay_When_RequestIsValid() {
         disabledDayService.createDisabledDay(disabledDay);
 
         verify(disabledDayRepository, times(1)).save(disabledDay);
     }
 
     @Test
-    public void testDeleteDisabledDayById(){
+    public void Should_DeleteDisabledDay_When_IdIsValid(){
         int idToDelete = 1;
 
         disabledDayService.deleteDisabledDayById(idToDelete);

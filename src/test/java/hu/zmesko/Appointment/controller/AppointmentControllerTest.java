@@ -6,14 +6,12 @@ import java.util.Optional;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,12 +31,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import hu.zmesko.Appointment.model.Appointment;
+import hu.zmesko.Appointment.security.filter.JwtAuthFilter;
 import hu.zmesko.Appointment.service.AppointmentService;
 
-@WebMvcTest(AppointmentContoller.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(AppointmentContoller.class)
 public class AppointmentControllerTest {
+
+        @MockitoBean
+        private JwtAuthFilter jwtAuthFilter;
 
         private Appointment appointment = new Appointment(1,
                                                         "Filip",
@@ -113,7 +114,7 @@ public class AppointmentControllerTest {
 
                 String json = objectMapper.writeValueAsString(appointment);
 
-                mockMvc.perform(post("/api/appointment")
+                mockMvc.perform(post("/api/appointment/booking")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json))
                         .andExpect(status().isOk());
