@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,11 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtService {
 
-    private final String SECRET = "536756685970337541416549792F423F452848284D6251655468576D5A71347437";
+    private final String SECRET;
+
+    public JwtService(@Value("${jwt.secret}") String secret) {
+        this.SECRET = secret;
+    }
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
