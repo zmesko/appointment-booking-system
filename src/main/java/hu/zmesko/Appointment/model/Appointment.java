@@ -27,5 +27,6 @@ public class Appointment {
     private String email;
     private String mobileNumber;
     private LocalDateTime bookedAppointment;
+    @Builder.Default
     private LocalDateTime timeWhenBooked = LocalDateTime.now();
 }
