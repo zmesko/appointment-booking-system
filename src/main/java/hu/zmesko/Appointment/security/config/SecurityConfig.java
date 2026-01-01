@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**", "/auth/login", "/api/appointment/booking", "/api/appointment/year/*/month/*").permitAll()
+                        .requestMatchers("/auth/login", "/api/appointment/booking", "/api/appointment/year/*/month/*").permitAll()
                         .requestMatchers("/api/disabledday").hasAnyAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
