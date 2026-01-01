@@ -19,9 +19,10 @@ public class AppUserDetails implements UserDetails {
     public AppUserDetails(AppUser appUser) {
         this.userName = appUser.getUsername();
         this.password = appUser.getPassword();
-        this.authorities = List.of(appUser.getRoles().split(","))
-                .stream().map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.authorities = appUser.getRoles() == null ? List.of()
+                : List.of(appUser.getRoles().split(","))
+                        .stream().map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
     }
 
     @Override
