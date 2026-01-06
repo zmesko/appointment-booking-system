@@ -15,4 +15,7 @@ public class ConfigurationService {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
+
+    @Value("${jwt.expiration-ms}")
+    private long jwtExpirationMs;
 }

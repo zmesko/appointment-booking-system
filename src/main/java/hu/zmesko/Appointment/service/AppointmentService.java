@@ -4,17 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import hu.zmesko.Appointment.exception.IdNotFound;
 import hu.zmesko.Appointment.model.Appointment;
 import hu.zmesko.Appointment.repository.AppointmentsRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AppointmentService {
 
-    @Autowired
-    private AppointmentsRepository appointmentRepository;
+    private final AppointmentsRepository appointmentRepository;
 
     public List<Appointment> findAllAppointments() {
         return appointmentRepository.findAll();
@@ -33,18 +34,20 @@ public class AppointmentService {
     }
 
     public void deleteAppointmentById(int id) {
-        appointmentRepository.deleteById(id);
+        if (findAppointmentById(id).isPresent()) {
+            appointmentRepository.deleteById(id);
+        } else {
+            throw new IdNotFound();
+        }
     }
 
-    public void updateAppointmentById(Integer id, Appointment updatedAppointment) throws Exception {
-
+    public void updateAppointmentById(Integer id, Appointment updatedAppointment) {
         if (findAppointmentById(id).isPresent()) {
             updatedAppointment.setId(id);
             addAppointment(updatedAppointment);
         } else {
-            throw new Exception("id not found");
+            throw new IdNotFound();
         }
-
     }
 
 }

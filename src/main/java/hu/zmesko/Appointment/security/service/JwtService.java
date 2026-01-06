@@ -20,8 +20,11 @@ public class JwtService {
 
     private final String SECRET;
 
+    private final long EXPIRATION_TIME_MS;
+
     public JwtService(ConfigurationService configService) {
         this.SECRET = configService.getJwtSecret();
+        this.EXPIRATION_TIME_MS = configService.getJwtExpirationMs();
     }
 
     public String generateToken(String username) {
@@ -34,7 +37,7 @@ public class JwtService {
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_MS))
                 .signWith(getSignKey())
                 .compact();
     }

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class AppUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(unique = true, nullable = false)
