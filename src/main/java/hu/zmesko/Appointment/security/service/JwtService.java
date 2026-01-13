@@ -8,36 +8,49 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
-@Component
+@Service
 public class JwtService {
 
     private final String SECRET;
 
-    private final long EXPIRATION_TIME_MS;
+    private final long ACCESS_TOKEN_EXPIRATION_TIME_MS;
+
+    private final long REFRESH_TOKEN_EXPIRATION_TIME_MS;
 
     public JwtService(ConfigurationService configService) {
         this.SECRET = configService.getJwtSecret();
-        this.EXPIRATION_TIME_MS = configService.getJwtExpirationMs();
+        this.ACCESS_TOKEN_EXPIRATION_TIME_MS = configService.getJwtExpirationMs();
+        this.REFRESH_TOKEN_EXPIRATION_TIME_MS = configService.getJwtRefreshTokenExpirationMs();
     }
 
-    public String generateToken(String username) {
+    public String generateAccessToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        return createToken(claims, username, ACCESS_TOKEN_EXPIRATION_TIME_MS);
     }
 
-    private String createToken(Map<String, Object> claims, String username) {
+    public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username, REFRESH_TOKEN_EXPIRATION_TIME_MS);
+    }
+
+    public String generateRefreshToken(String username, long expirationTime) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username, expirationTime);
+    }
+
+    private String createToken(Map<String, Object> claims, String username, long expirationTime) {
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_MS))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSignKey())
                 .compact();
     }

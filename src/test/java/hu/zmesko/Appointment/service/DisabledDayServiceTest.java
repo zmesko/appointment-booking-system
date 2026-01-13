@@ -2,6 +2,7 @@ package hu.zmesko.Appointment.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,8 @@ public class DisabledDayServiceTest {
     @Test
     public void Should_DeleteDisabledDay_When_IdIsValid(){
         int idToDelete = 1;
+
+        when(disabledDayRepository.findById(idToDelete)).thenReturn(Optional.of(disabledDay));
 
         disabledDayService.deleteDisabledDayById(idToDelete);
 

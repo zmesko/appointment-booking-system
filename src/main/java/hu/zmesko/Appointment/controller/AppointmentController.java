@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/appointment")
 @CrossOrigin
 @RequiredArgsConstructor
-public class AppointmentContoller {
+public class AppointmentController {
 
     private final AppointmentService appointmentService;
 

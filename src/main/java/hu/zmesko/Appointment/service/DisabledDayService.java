@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import hu.zmesko.Appointment.exception.IdNotFound;
+import hu.zmesko.Appointment.exception.IdNotFoundException;
 import hu.zmesko.Appointment.model.DisabledDay;
 import hu.zmesko.Appointment.repository.DisabledDaysRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ public class DisabledDayService {
         return disabledDayRepository.findAll();
     }
 
+    @SuppressWarnings("null")
     public DisabledDay createDisabledDay(DisabledDay disabledDay) {
         return disabledDayRepository.save(disabledDay);
     }
@@ -28,7 +29,7 @@ public class DisabledDayService {
         if (disabledDayRepository.findById(id).isPresent()) {
             disabledDayRepository.deleteById(id);
         } else {
-            throw new IdNotFound();
+            throw new IdNotFoundException();
         }
         
     }

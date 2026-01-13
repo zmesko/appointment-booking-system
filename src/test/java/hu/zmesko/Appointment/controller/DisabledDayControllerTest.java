@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,26 +26,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import hu.zmesko.Appointment.exception.GlobalExceptionHandler;
+import hu.zmesko.Appointment.exception.IdNotFoundException;
 import hu.zmesko.Appointment.model.DisabledDay;
-import hu.zmesko.Appointment.security.filter.JwtAuthFilter;
 import hu.zmesko.Appointment.service.DisabledDayService;
 
+@WebMvcTest(controllers = DisabledDayController.class, useDefaultFilters = false)
+@Import({
+        DisabledDayController.class,
+        GlobalExceptionHandler.class
+})
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(DisabledDayController.class)
 public class DisabledDayControllerTest {
-
-    @MockitoBean
-    private JwtAuthFilter jwtAuthFilter;
-
-    private DisabledDay disabledDay = new DisabledDay(1, "John", LocalDate.of(2025, 10, 10));
-
-    private DisabledDay disabledDay2 = new DisabledDay(2, "Filip", LocalDate.of(2025, 10, 11));
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private DisabledDayService disabledDayService;
+
+    private DisabledDay disabledDay = new DisabledDay(1, "John", LocalDate.of(2025, 10, 10));
+
+    private DisabledDay disabledDay2 = new DisabledDay(2, "Filip", LocalDate.of(2025, 10, 11));
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -96,11 +99,11 @@ public class DisabledDayControllerTest {
 
         int id = 99;
 
-        doThrow(new RuntimeException("Id not found!")).when(disabledDayService).deleteDisabledDayById(id);
+        doThrow(new IdNotFoundException()).when(disabledDayService).deleteDisabledDayById(id);
 
         mockMvc.perform(delete("/api/disabledday/{id}", id))
                 .andExpect(status().isBadRequest());
 
         verify(disabledDayService).deleteDisabledDayById(id);
     }
-}
+} 

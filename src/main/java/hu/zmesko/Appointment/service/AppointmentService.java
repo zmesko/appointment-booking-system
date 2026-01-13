@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import hu.zmesko.Appointment.exception.IdNotFound;
+import hu.zmesko.Appointment.exception.IdNotFoundException;
 import hu.zmesko.Appointment.model.Appointment;
 import hu.zmesko.Appointment.repository.AppointmentsRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ public class AppointmentService {
         return appointmentRepository.findByYearOfMonth(year, month);
     }
 
+    @SuppressWarnings("null")
     public void addAppointment(Appointment newAppointment) {
         appointmentRepository.save(newAppointment);
     }
@@ -37,17 +38,16 @@ public class AppointmentService {
         if (findAppointmentById(id).isPresent()) {
             appointmentRepository.deleteById(id);
         } else {
-            throw new IdNotFound();
+            throw new IdNotFoundException();
         }
     }
 
     public void updateAppointmentById(Integer id, Appointment updatedAppointment) {
-        if (findAppointmentById(id).isPresent()) {
-            updatedAppointment.setId(id);
-            addAppointment(updatedAppointment);
-        } else {
-            throw new IdNotFound();
-        }
+        Appointment existing = appointmentRepository.findById(id)
+                .orElseThrow(() -> new IdNotFoundException());
+                
+        updatedAppointment.setId(id);
+        appointmentRepository.save(updatedAppointment);
     }
 
 }

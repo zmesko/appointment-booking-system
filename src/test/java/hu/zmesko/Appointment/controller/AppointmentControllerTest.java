@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,36 +31,38 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import hu.zmesko.Appointment.exception.GlobalExceptionHandler;
+import hu.zmesko.Appointment.exception.IdNotFoundException;
 import hu.zmesko.Appointment.model.Appointment;
-import hu.zmesko.Appointment.security.filter.JwtAuthFilter;
 import hu.zmesko.Appointment.service.AppointmentService;
 
+@WebMvcTest(controllers = AppointmentController.class, useDefaultFilters = false)
+@Import({
+                AppointmentController.class,
+                GlobalExceptionHandler.class
+})
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(AppointmentContoller.class)
 public class AppointmentControllerTest {
-
-        @MockitoBean
-        private JwtAuthFilter jwtAuthFilter;
-
-        private Appointment appointment = new Appointment(1,
-                                                        "Filip",
-                                                        "filip@gmail.com",
-                                                        "",
-                                                        LocalDateTime.of(2025, 10,12 , 10, 30),
-                                                        LocalDateTime.now());
-
-        private Appointment appointment2 = new Appointment(2,
-                                                        "John",
-                                                        "john@gmail.com",
-                                                        "",
-                                                        LocalDateTime.of(2025, 10,12 , 10, 00),
-                                                        LocalDateTime.now());
 
         @Autowired
         private MockMvc mockMvc;
 
         @MockitoBean
         private AppointmentService appointmentService;
+
+        private Appointment appointment = new Appointment(1,
+                        "Filip",
+                        "filip@gmail.com",
+                        "",
+                        LocalDateTime.of(2025, 10, 12, 10, 30),
+                        LocalDateTime.now());
+
+        private Appointment appointment2 = new Appointment(2,
+                        "John",
+                        "john@gmail.com",
+                        "",
+                        LocalDateTime.of(2025, 10, 12, 10, 00),
+                        LocalDateTime.now());
 
         private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
                         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -108,7 +111,6 @@ public class AppointmentControllerTest {
                 verify(appointmentService).findAppointmentById(id);
         }
 
-
         @Test
         public void Should_AddAppointment_When_RequestIsValid() throws Exception {
 
@@ -117,7 +119,7 @@ public class AppointmentControllerTest {
                 mockMvc.perform(post("/api/appointment/booking")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json))
-                        .andExpect(status().isOk());
+                                .andExpect(status().isOk());
 
                 verify(appointmentService).addAppointment(any(Appointment.class));
         }
@@ -127,12 +129,12 @@ public class AppointmentControllerTest {
 
                 int id = 1;
 
-                Appointment updatedAppointment = new Appointment(1, 
-                                                                "Updated Filip", 
-                                                                "filip@gmail.com", 
-                                                                "",
-                                                                LocalDateTime.now().plusDays(1), 
-                                                                LocalDateTime.now());
+                Appointment updatedAppointment = new Appointment(1,
+                                "Updated Filip",
+                                "filip@gmail.com",
+                                "",
+                                LocalDateTime.now().plusDays(1),
+                                LocalDateTime.now());
 
                 String json = objectMapper.writeValueAsString(updatedAppointment);
 
@@ -141,34 +143,34 @@ public class AppointmentControllerTest {
                 mockMvc.perform(put("/api/appointment/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json))
-                        .andExpect(status().isOk())
-                        .andExpect(content().string("Appointment updated"));
+                                .andExpect(status().isOk())
+                                .andExpect(content().string("Appointment updated"));
 
                 verify(appointmentService).updateAppointmentById(eq(id), any(Appointment.class));
 
         }
 
         @Test
-        public void Should_ThrowException_When_UpdatingNonExistingAppointment () throws Exception {
+        public void Should_ThrowException_When_UpdatingNonExistingAppointment() throws Exception {
 
                 int id = 999;
 
-                Appointment updatedAppointment = new Appointment(1, 
-                                                                "Missed Filip", 
-                                                                "filip@gmail.com", 
-                                                                "",
-                                                                LocalDateTime.now().plusDays(1), 
-                                                                LocalDateTime.now());
+                Appointment updatedAppointment = new Appointment(1,
+                                "Missed Filip",
+                                "filip@gmail.com",
+                                "",
+                                LocalDateTime.now().plusDays(1),
+                                LocalDateTime.now());
 
                 String json = objectMapper.writeValueAsString(updatedAppointment);
 
-                doThrow(new RuntimeException("Id not found!")).when(appointmentService).updateAppointmentById(eq(id), any(Appointment.class));
+                doThrow(new IdNotFoundException()).when(appointmentService).updateAppointmentById(eq(id),
+                                any(Appointment.class));
 
                 mockMvc.perform(put("/api/appointment/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json))
-                        .andExpect(status().isBadRequest())
-                        .andExpect(content().string("Id not found!"));
+                                .andExpect(status().isBadRequest());
 
                 verify(appointmentService).updateAppointmentById(eq(id), any(Appointment.class));
 
@@ -181,7 +183,7 @@ public class AppointmentControllerTest {
                 doNothing().when(appointmentService).deleteAppointmentById(id);
 
                 mockMvc.perform(delete("/api/appointment/{id}", id))
-                        .andExpect(status().isOk());
+                                .andExpect(status().isOk());
 
                 verify(appointmentService).deleteAppointmentById(id);
         }
@@ -190,10 +192,10 @@ public class AppointmentControllerTest {
         public void Should_ReturnBadRequest_When_DeleteByIdNotFound() throws Exception {
                 int id = 99;
 
-                doThrow(new RuntimeException("Id not found!")).when(appointmentService).deleteAppointmentById(id);
+                doThrow(new IdNotFoundException()).when(appointmentService).deleteAppointmentById(id);
 
                 mockMvc.perform(delete("/api/appointment/{id}", id))
-                        .andExpect(status().isBadRequest());
+                                .andExpect(status().isBadRequest());
 
                 verify(appointmentService).deleteAppointmentById(id);
         }
@@ -203,12 +205,14 @@ public class AppointmentControllerTest {
                 int year = 2025;
                 int month = 10;
 
-                when(appointmentService.findAppointmentByYearOfMonth(year, month)).thenReturn(List.of(appointment.getBookedAppointment(), appointment2.getBookedAppointment()));
+                when(appointmentService.findAppointmentByYearOfMonth(year, month)).thenReturn(
+                                List.of(appointment.getBookedAppointment(), appointment2.getBookedAppointment()));
 
                 mockMvc.perform(get("/api/appointment/year/{year}/month/{month}", year, month))
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                                .andExpect(jsonPath("[*]", Matchers.everyItem(Matchers.startsWith(year + "-" + month))));
+                                .andExpect(jsonPath("[*]",
+                                                Matchers.everyItem(Matchers.startsWith(year + "-" + month))));
 
                 verify(appointmentService).findAppointmentByYearOfMonth(year, month);
         }

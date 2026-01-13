@@ -18,4 +18,7 @@ public class ConfigurationService {
 
     @Value("${jwt.expiration-ms}")
     private long jwtExpirationMs;
+
+    @Value("${jwt.refresh.expiration-ms}")
+    private long jwtRefreshTokenExpirationMs;
 }

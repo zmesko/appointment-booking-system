@@ -27,8 +27,9 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/h2-console/**",
                                 "/auth/login",
+                                "/auth/logout",
+                                "/auth/refresh",
                                 "/api/appointment/booking",
                                 "/api/appointment/year/*/month/*")
                         .permitAll()

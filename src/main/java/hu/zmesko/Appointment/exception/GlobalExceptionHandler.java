@@ -11,14 +11,14 @@ import hu.zmesko.Appointment.model.ErrorResponse;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsernameAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleUsernameExists(UsernameAlreadyExistsException ex) {
         return new ErrorResponse("Username already exists");
     }
 
-    @ExceptionHandler(IdNotFound.class)
+    @ExceptionHandler(IdNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIdExists(IdNotFound ex){
+    public ErrorResponse handleIdExists(IdNotFoundException ex){
         return new ErrorResponse("Id not found");
     }
 

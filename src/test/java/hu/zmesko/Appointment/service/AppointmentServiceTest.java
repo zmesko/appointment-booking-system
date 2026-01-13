@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import hu.zmesko.Appointment.exception.IdNotFoundException;
 import hu.zmesko.Appointment.model.Appointment;
 import hu.zmesko.Appointment.repository.AppointmentsRepository;
 
@@ -98,6 +99,8 @@ public class AppointmentServiceTest {
     public void Should_DeleteAppointment_When_IdIsValid() {
         int idToDelete = 1;
 
+        when(appointmentRepository.findById(idToDelete)).thenReturn(Optional.of(appointment));
+
         appointmentService.deleteAppointmentById(idToDelete);
 
         verify(appointmentRepository, times(1)).deleteById(idToDelete);
@@ -144,10 +147,10 @@ public class AppointmentServiceTest {
 
         when(appointmentRepository.findById(id)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class,
+        Exception exception = assertThrows(IdNotFoundException.class,
                 () -> appointmentService.updateAppointmentById(id, updatedAppointment));
 
-        assertEquals("id not found", exception.getMessage());
+        assertEquals("Id not found", exception.getMessage());
 
         verify(appointmentRepository, never()).save(any());
 
