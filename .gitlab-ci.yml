@@ -21,6 +21,7 @@ build:
     - apt-get update 
     - apt-get install -y docker.io awscli
   variables:
+    DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
     IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   script:
