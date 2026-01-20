@@ -49,20 +49,23 @@ public class AppointmentControllerTest {
 
         @MockitoBean
         private AppointmentService appointmentService;
+        private Appointment appointment = Appointment.builder()
+                        .id(1)
+                        .name("Filip")
+                        .email("filip@gmail.com")
+                        .mobileNumber(null)
+                        .bookedAppointment(LocalDateTime.of(2025, 10, 12, 10, 30))
+                        .timeWhenBooked(LocalDateTime.now())
+                        .build();
 
-        private Appointment appointment = new Appointment(1,
-                        "Filip",
-                        "filip@gmail.com",
-                        "",
-                        LocalDateTime.of(2025, 10, 12, 10, 30),
-                        LocalDateTime.now());
-
-        private Appointment appointment2 = new Appointment(2,
-                        "John",
-                        "john@gmail.com",
-                        "",
-                        LocalDateTime.of(2025, 10, 12, 10, 00),
-                        LocalDateTime.now());
+        private Appointment appointment2 = Appointment.builder()
+                        .id(2)
+                        .name("John")
+                        .email("john@gmail.com")
+                        .mobileNumber(null)
+                        .bookedAppointment(LocalDateTime.of(2025, 10, 12, 10, 00))
+                        .timeWhenBooked(LocalDateTime.now())
+                        .build();
 
         private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
                         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -129,12 +132,14 @@ public class AppointmentControllerTest {
 
                 int id = 1;
 
-                Appointment updatedAppointment = new Appointment(1,
-                                "Updated Filip",
-                                "filip@gmail.com",
-                                "",
-                                LocalDateTime.now().plusDays(1),
-                                LocalDateTime.now());
+                Appointment updatedAppointment = Appointment.builder()
+                                .id(id)
+                                .name("Update Filip")
+                                .email("filip@gmail.com")
+                                .mobileNumber(null)
+                                .bookedAppointment(LocalDateTime.of(2025, 10, 12, 10, 30))
+                                .timeWhenBooked(LocalDateTime.now())
+                                .build();
 
                 String json = objectMapper.writeValueAsString(updatedAppointment);
 
@@ -155,12 +160,14 @@ public class AppointmentControllerTest {
 
                 int id = 999;
 
-                Appointment updatedAppointment = new Appointment(1,
-                                "Missed Filip",
-                                "filip@gmail.com",
-                                "",
-                                LocalDateTime.now().plusDays(1),
-                                LocalDateTime.now());
+                Appointment updatedAppointment = Appointment.builder()
+                                .id(id)
+                                .name("Update Filip")
+                                .email("filip@gmail.com")
+                                .mobileNumber(null)
+                                .bookedAppointment(LocalDateTime.of(2025, 10, 12, 10, 30))
+                                .timeWhenBooked(LocalDateTime.now())
+                                .build();
 
                 String json = objectMapper.writeValueAsString(updatedAppointment);
 

@@ -18,9 +18,13 @@ public class LoginAttemptService {
         redisTemplate.delete(LOGIN_ATTEMPT_PREFIX + key);
     }
 
-    @SuppressWarnings("null")
     public void loginFailed(String key) {
         Long attempts = redisTemplate.opsForValue().increment(LOGIN_ATTEMPT_PREFIX + key);
+
+        if (attempts == null) {
+            throw new NullPointerException();
+        }
+
 
         if (attempts == 1) {
             redisTemplate.expire(LOGIN_ATTEMPT_PREFIX + key, java.time.Duration.ofMinutes(BLOCK_TIME_MINUTE));

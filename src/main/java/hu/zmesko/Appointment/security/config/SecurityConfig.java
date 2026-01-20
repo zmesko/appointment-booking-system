@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                            "/actuator/health",
                                 "/auth/login",
                                 "/auth/logout",
                                 "/auth/refresh",

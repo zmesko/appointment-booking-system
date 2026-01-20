@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IdNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIdExists(IdNotFoundException ex){
+    public ErrorResponse handleIdExists(IdNotFoundException ex) {
         return new ErrorResponse("Id not found");
     }
 

@@ -45,9 +45,11 @@ public class DisabledDayControllerTest {
         @MockitoBean
         private DisabledDayService disabledDayService;
 
-        private DisabledDay disabledDay = new DisabledDay(1, "John", LocalDate.of(2025, 10, 10));
+        private DisabledDay disabledDay = DisabledDay.builder().id(1).name("John")
+                        .disabledDay(LocalDate.of(2025, 10, 10)).build();
 
-        private DisabledDay disabledDay2 = new DisabledDay(2, "Filip", LocalDate.of(2025, 10, 11));
+        private DisabledDay disabledDay2 = DisabledDay.builder().id(2).name("Filip")
+                        .disabledDay(LocalDate.of(2025, 10, 11)).build();
 
         private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
                         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
