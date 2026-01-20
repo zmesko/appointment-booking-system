@@ -17,6 +17,9 @@ build:
   image: maven:3.9.6-eclipse-temurin-21
   services:
     - docker:dind
+  before_script: 
+    - apt-get update 
+    - apt-get install -y docker.io awscli
   script:
     - chmod +x mvnw
     - ./mvnw clean package -q -DskipTests
