@@ -17,6 +17,7 @@ build:
   services:
     - docker:dind
   script:
+    - chmod +x mvnw
     - ./mvnw clean package -q -DskipTests
     - docker build -t $ECR_REPO:$IMAGE_TAG .
     - aws ecr get-login-password --region $AWS_REGION |
