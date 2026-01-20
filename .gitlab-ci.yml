@@ -7,14 +7,14 @@ stages:
 
 test:
     stage: test
-    image: maven:3.9.6-openjdk:17-jdk-slim
+    image: maven:3.9.6-eclipse-temurin-17
     script:
         - chmod +x mvnw
         - ./mvnw -q test
 
 build:
   stage: build
-  image: maven:3.9.6-openjdk:17-jdk-slim
+  image: maven:3.9.6-eclipse-temurin-17
   services:
     - docker:dind
   before_script: 
