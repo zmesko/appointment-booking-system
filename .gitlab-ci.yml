@@ -7,14 +7,14 @@ stages:
 
 test:
     stage: test
-    image: eclipse-temurin:21-jre-jammy
+    image: eclipse-temurin:21-jdk-jammy
     script:
         - chmod +x mvnw
         - ./mvnw -q test
 
 build:
   stage: build
-  image: eclipse-temurin:21-jre-jammy
+  image: eclipse-temurin:21-jdk-jammy
   services:
     - docker:dind
   before_script: 
