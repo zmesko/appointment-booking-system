@@ -1,5 +1,8 @@
 image: docker:24
 
+variables:
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+
 stages:
   - test
   - build
