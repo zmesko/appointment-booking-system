@@ -23,9 +23,6 @@ build:
     DOCKER_TLS_CERTDIR: ""
     IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   script:
-    - echo "ECR_REPO=$ECR_REPO"
-    - echo "IMAGE_TAG=$IMAGE_TAG"
-
     - chmod +x mvnw
     - ./mvnw clean package -q -DskipTests
     - docker build -t $ECR_REPO:$IMAGE_TAG .
@@ -40,4 +37,4 @@ deploy:
     - apt-get update
     - apt-get install -y awscli
   script:
-    - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
+    - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region $AWS_REGION --force-new-deployment
