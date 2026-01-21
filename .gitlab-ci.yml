@@ -3,12 +3,12 @@ stages:
   - build
   - deploy
 
-#test:
-#    stage: test
-#    image: eclipse-temurin:21-jdk-jammy
-#    script:
-#        - chmod +x mvnw
-#        - ./mvnw -q test
+test:
+    stage: test
+    image: eclipse-temurin:21-jdk-jammy
+    script:
+        - chmod +x mvnw
+        - ./mvnw -q test
 
 build:
   stage: build
