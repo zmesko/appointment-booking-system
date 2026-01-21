@@ -1,5 +1,3 @@
-[![pipeline status](https://gitlab.com/zmeskoadam/appointment-booking-system/appointment-booking-system/badges/main/pipeline.svg)](https://gitlab.com/zmeskoadam/appointment-booking-system/appointment-booking-system/-/commits/main)
-
 This Spring Boot application implements an appointment booking program
 
 <b>Main parts<br>
