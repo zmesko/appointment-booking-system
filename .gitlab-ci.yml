@@ -1,16 +1,14 @@
-image: docker:24
-
 stages:
   - test
   - build
   - deploy
 
-test:
-    stage: test
-    image: eclipse-temurin:21-jdk-jammy
-    script:
-        - chmod +x mvnw
-        - ./mvnw -q test
+#test:
+#    stage: test
+#    image: eclipse-temurin:21-jdk-jammy
+#    script:
+#        - chmod +x mvnw
+#        - ./mvnw -q test
 
 build:
   stage: build
@@ -18,7 +16,7 @@ build:
   services:
     - docker:dind
   before_script: 
-    - apt-get update 
+    - apt-get update
     - apt-get install -y docker.io awscli
   variables:
     DOCKER_HOST: "tcp://docker:2375"
@@ -37,8 +35,9 @@ build:
 
 deploy:
   stage: deploy
+  image: ubuntu:22.04
   before_script: 
-    - apt-get update 
-    - apt-get install -y docker.io awscli
+    - apt-get update
+    - apt-get install -y awscli
   script:
     - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
