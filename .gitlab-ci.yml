@@ -1,16 +1,16 @@
 image: docker:24
 
 stages:
- # - test
+  - test
   - build
   - deploy
 
-#test:
-#    stage: test
-#    image: eclipse-temurin:21-jdk-jammy
-#    script:
-#        - chmod +x mvnw
-#        - ./mvnw -q test
+test:
+    stage: test
+    image: eclipse-temurin:21-jdk-jammy
+    script:
+        - chmod +x mvnw
+        - ./mvnw -q test
 
 build:
   stage: build
@@ -37,8 +37,8 @@ build:
 
 deploy:
   stage: deploy
+  before_script: 
+    - apt-get update 
+    - apt-get install -y docker.io awscli
   script:
-    - aws ecs update-service \
-        --cluster $ECS_CLUSTER \
-        --service $ECS_SERVICE \
-        --force-new-deployment
+    - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
