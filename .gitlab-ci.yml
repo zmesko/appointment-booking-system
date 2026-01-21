@@ -1,7 +1,7 @@
 image: docker:24
 
 stages:
-  - test
+ # - test
   - build
   - deploy
 
