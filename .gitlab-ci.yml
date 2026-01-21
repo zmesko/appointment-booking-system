@@ -26,8 +26,8 @@ build:
     DOCKER_TLS_CERTDIR: ""
     IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   script:
-    echo "ECR_REPO=$ECR_REPO"
-    echo "IMAGE_TAG=$IMAGE_TAG"
+    - echo "ECR_REPO=$ECR_REPO"
+    - echo "IMAGE_TAG=$IMAGE_TAG"
 
     - chmod +x mvnw
     - ./mvnw clean package -q -DskipTests
