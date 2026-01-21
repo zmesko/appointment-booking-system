@@ -4,16 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,79 +26,86 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import hu.zmesko.Appointment.exception.GlobalExceptionHandler;
+import hu.zmesko.Appointment.exception.IdNotFoundException;
 import hu.zmesko.Appointment.model.DisabledDay;
 import hu.zmesko.Appointment.service.DisabledDayService;
 
-@WebMvcTest(DisabledDayController.class)
-@AutoConfigureMockMvc(addFilters=false)
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = DisabledDayController.class, useDefaultFilters = false)
+@Import({
+                DisabledDayController.class,
+                GlobalExceptionHandler.class
+})
+@AutoConfigureMockMvc(addFilters = false)
 public class DisabledDayControllerTest {
 
-    private DisabledDay disabledDay = new DisabledDay(1, "John", LocalDate.of(2025, 10, 10));
+        @Autowired
+        private MockMvc mockMvc;
 
-    private DisabledDay disabledDay2 = new DisabledDay(2, "Filip", LocalDate.of(2025, 10, 11));
+        @MockitoBean
+        private DisabledDayService disabledDayService;
 
-    @Autowired
-    private MockMvc mockMvc;
+        private DisabledDay disabledDay = DisabledDay.builder().id(1).name("John")
+                        .disabledDay(LocalDate.of(2025, 10, 10)).build();
 
-    @MockitoBean
-    private DisabledDayService disabledDayService;
+        private DisabledDay disabledDay2 = DisabledDay.builder().id(2).name("Filip")
+                        .disabledDay(LocalDate.of(2025, 10, 11)).build();
 
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
+        private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
                         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    @Test
-    public void testGetAllDisabledDays() throws Exception{
-        
-        List<DisabledDay> mockList = List.of(disabledDay, disabledDay2);
+        @Test
+        public void Should_ReturnAllDisabledDays_When_RepositoryContainsMultiplyDisabledDay() throws Exception {
 
-        when(disabledDayService.getAllDisabledDays()).thenReturn(mockList);
+                List<DisabledDay> mockList = List.of(disabledDay, disabledDay2);
 
-        mockMvc.perform(get("/api/disabledday"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].name").value("John"))
-                .andExpect(jsonPath("$[1].name").value("Filip"));
+                when(disabledDayService.getAllDisabledDays()).thenReturn(mockList);
 
-        verify(disabledDayService).getAllDisabledDays();
-    }
+                mockMvc.perform(get("/api/disabledday"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.length()").value(2))
+                                .andExpect(jsonPath("$[0].name").value("John"))
+                                .andExpect(jsonPath("$[1].name").value("Filip"));
 
-    @Test
-    public void testCreateDisaledDay() throws Exception{
+                verify(disabledDayService).getAllDisabledDays();
+        }
 
-        String json = objectMapper.writeValueAsString(disabledDay);
+        @Test
+        public void Should_AddDisabledDay_When_RequestIsValid() throws Exception {
 
-        mockMvc.perform(post("/api/disabledday")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                    .andExpect(status().isOk());
+                String json = objectMapper.writeValueAsString(disabledDay);
 
-        verify(disabledDayService).createDisabledDay(any(DisabledDay.class));
-    }
+                mockMvc.perform(post("/api/disabledday")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                                .andExpect(status().isOk());
 
-    @Test
-    public void testDeleteDisabledDayById() throws Exception{
+                verify(disabledDayService).createDisabledDay(any(DisabledDay.class));
+        }
 
-        int id = 1;
+        @Test
+        public void Should_DeleteDisabledDay_When_IdIsValid() throws Exception {
 
-        doNothing().when(disabledDayService).deleteDisabledDayById(id);
+                int id = 1;
 
-        mockMvc.perform(delete("/api/disabledday/{id}", id))
-                    .andExpect(status().isOk());
+                doNothing().when(disabledDayService).deleteDisabledDayById(id);
 
-        verify(disabledDayService).deleteDisabledDayById(id);
-    }
+                mockMvc.perform(delete("/api/disabledday/{id}", id))
+                                .andExpect(status().isOk());
 
-    @Test
-    public void testDeleteDisabledDayById_NotFound() throws Exception{
+                verify(disabledDayService).deleteDisabledDayById(id);
+        }
 
-        int id = 99;
+        @Test
+        public void Should_DeleteDisabledDay_When_IdIsNotValid() throws Exception {
 
-        doThrow(new RuntimeException("Id not found!")).when(disabledDayService).deleteDisabledDayById(id);
+                int id = 99;
 
-        mockMvc.perform(delete("/api/disabledday/{id}", id))
-                    .andExpect(status().isBadRequest());
-                    
-        verify(disabledDayService).deleteDisabledDayById(id);
-    }
+                doThrow(new IdNotFoundException()).when(disabledDayService).deleteDisabledDayById(id);
+
+                mockMvc.perform(delete("/api/disabledday/{id}", id))
+                                .andExpect(status().isBadRequest());
+
+                verify(disabledDayService).deleteDisabledDayById(id);
+        }
 }

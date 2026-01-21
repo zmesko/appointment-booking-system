@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,18 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hu.zmesko.Appointment.model.Appointment;
 import hu.zmesko.Appointment.service.AppointmentService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/appointment")
 @CrossOrigin
-public class AppointmentContoller {
+@RequiredArgsConstructor
+public class AppointmentController {
 
-    @Autowired
-    private AppointmentService appointmentService;
+    private final AppointmentService appointmentService;
 
     @GetMapping("")
     public List<Appointment> findAllAppointments() {
-
         return appointmentService.findAllAppointments();
     }
 
@@ -44,29 +43,21 @@ public class AppointmentContoller {
         return appointmentService.findAppointmentByYearOfMonth(year, month);
     }
 
-    @PostMapping("")
+    @PostMapping("/booking")
     public void addAppointment(@RequestBody Appointment appointment) {
         appointmentService.addAppointment(appointment);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateAppointmentById(@PathVariable int id, @RequestBody Appointment updatedAppointment) {
-        try {
-            appointmentService.updateAppointmentById(id, updatedAppointment);
-            return new ResponseEntity<>("Appointment updated", HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("Id not found!", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> updateAppointmentById(@PathVariable int id,
+            @RequestBody Appointment updatedAppointment) {
+        appointmentService.updateAppointmentById(id, updatedAppointment);
+        return new ResponseEntity<>("Appointment updated", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAppointmentById(@PathVariable int id) {
-    try {
+    public ResponseEntity<String> deleteAppointmentById(@PathVariable int id) {
         appointmentService.deleteAppointmentById(id);
-        return ResponseEntity.ok().build();
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok("Delete successful");
     }
-}
 }

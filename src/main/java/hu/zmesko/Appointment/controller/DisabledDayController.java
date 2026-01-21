@@ -2,7 +2,6 @@ package hu.zmesko.Appointment.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,13 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hu.zmesko.Appointment.model.DisabledDay;
 import hu.zmesko.Appointment.service.DisabledDayService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/disabledday")
 @CrossOrigin
+@RequiredArgsConstructor
 public class DisabledDayController {
-    @Autowired
-    private DisabledDayService disabledDayService;
+
+    private final DisabledDayService disabledDayService;
 
     @GetMapping
     public List<DisabledDay> getAllDisabledDays() {
@@ -34,14 +35,8 @@ public class DisabledDayController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDisabledDayById(@PathVariable Integer id) {
-
-        try {
-            disabledDayService.deleteDisabledDayById(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    public ResponseEntity<String> deleteDisabledDayById(@PathVariable Integer id) {
+        disabledDayService.deleteDisabledDayById(id);
+        return ResponseEntity.ok("Delete successful");
     }
 }
