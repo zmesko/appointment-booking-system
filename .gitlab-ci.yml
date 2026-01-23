@@ -3,13 +3,6 @@ stages:
   - build
   - deploy
 
-test:
-    stage: test
-    image: eclipse-temurin:21-jdk-jammy
-    script:
-        - chmod +x mvnw
-        - ./mvnw -q test
-
 build:
   stage: build
   image: eclipse-temurin:21-jdk-jammy
@@ -29,6 +22,13 @@ build:
     - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
     - docker tag $ECR_REPO:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
     - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+
+test:
+    stage: test
+    image: eclipse-temurin:21-jdk-jammy
+    script:
+        - chmod +x mvnw
+        - ./mvnw -q test
 
 deploy:
   stage: deploy
