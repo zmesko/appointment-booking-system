@@ -1,10 +1,25 @@
 stages:
   - build
   - test
+  - docker
   - deploy
 
-build:
+maven-build:
   stage: build
+  image: eclipse-temurin:21-jdk-jammy
+  script:
+    - chmod +x mvnw
+    - ./mvnw clean package -q -DskipTests
+
+test:
+    stage: test
+    image: eclipse-temurin:21-jdk-jammy
+    script:
+        - chmod +x mvnw
+        - ./mvnw -q test
+
+docker-build:
+  stage: docker
   image: eclipse-temurin:21-jdk-jammy
   services:
     - docker:dind
@@ -16,19 +31,10 @@ build:
     DOCKER_TLS_CERTDIR: ""
     IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   script:
-    - chmod +x mvnw
-    - ./mvnw clean package -q -DskipTests
     - docker build -t $ECR_REPO:$IMAGE_TAG .
     - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
     - docker tag $ECR_REPO:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
     - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
-
-test:
-    stage: test
-    image: eclipse-temurin:21-jdk-jammy
-    script:
-        - chmod +x mvnw
-        - ./mvnw -q test
 
 deploy:
   stage: deploy
