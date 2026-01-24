@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - docker
   - deploy
 
 maven-build:
@@ -18,7 +19,7 @@ test:
         - ./mvnw -q test
 
 docker-build:
-  stage: build
+  stage: docker
   image: eclipse-temurin:21-jdk-jammy
   services:
     - docker:dind
