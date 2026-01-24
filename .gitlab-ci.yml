@@ -1,48 +1,46 @@
-image: docker:24
-
 stages:
- # - test
   - build
+  - test
   - deploy
 
-#test:
-#    stage: test
-#    image: eclipse-temurin:21-jdk-jammy
-#    script:
-#        - chmod +x mvnw
-#        - ./mvnw -q test
+maven-build:
+  stage: build
+  image: eclipse-temurin:21-jdk-jammy
+  script:
+    - chmod +x mvnw
+    - ./mvnw clean package -q -DskipTests
 
-build:
+test:
+    stage: test
+    image: eclipse-temurin:21-jdk-jammy
+    script:
+        - chmod +x mvnw
+        - ./mvnw -q test
+
+docker-build:
   stage: build
   image: eclipse-temurin:21-jdk-jammy
   services:
     - docker:dind
   before_script: 
-    - apt-get update 
+    - apt-get update
     - apt-get install -y docker.io awscli
   variables:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
     IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   script:
-    - echo "ECR_REPO=$ECR_REPO"
-    - echo "IMAGE_TAG=$IMAGE_TAG"
-
-    - chmod +x mvnw
-    - ./mvnw clean package -q -DskipTests
     - docker build -t $ECR_REPO:$IMAGE_TAG .
-    - aws ecr get-login-password --region $AWS_REGION |
-      docker login --username AWS --password-stdin \
-      $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-    - docker tag $ECR_REPO:$IMAGE_TAG \
-      $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
-    - docker push \
-      $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    - docker tag $ECR_REPO:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
 
 deploy:
   stage: deploy
+  image: eclipse-temurin:21-jdk-jammy
+  before_script: 
+    - apt-get update
+    - apt-get install -y awscli
   script:
-    - aws ecs update-service \
-        --cluster $ECS_CLUSTER \
-        --service $ECS_SERVICE \
-        --force-new-deployment
+    - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region $AWS_REGION --force-new-deployment
+  when: manual
