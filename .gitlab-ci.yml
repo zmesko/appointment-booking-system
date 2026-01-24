@@ -43,5 +43,5 @@ deploy:
     - apt-get update
     - apt-get install -y awscli
   script:
-    - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region $AWS_REGION --force-new-deployment
+    - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --task-definition appointment-booking-task --region $AWS_REGION --force-new-deployment
   when: manual
