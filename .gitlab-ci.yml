@@ -1,0 +1,45 @@
+image: docker:24
+
+stages:
+  - test
+  - build
+  - deploy
+
+test:
+    stage: test
+    image: eclipse-temurin:21-jdk-jammy
+    script:
+        - chmod +x mvnw
+        - ./mvnw -q test
+
+build:
+  stage: build
+  image: eclipse-temurin:21-jdk-jammy
+  services:
+    - docker:dind
+  before_script: 
+    - apt-get update 
+    - apt-get install -y docker.io awscli
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+    IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  script:
+    - chmod +x mvnw
+    - ./mvnw clean package -q -DskipTests
+    - docker build -t $ECR_REPO:$IMAGE_TAG .
+    - aws ecr get-login-password --region $AWS_REGION |
+      docker login --username AWS --password-stdin \
+      $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    - docker tag $ECR_REPO:$IMAGE_TAG \
+      $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+    - docker push \
+      $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+
+deploy:
+  stage: deploy
+  script:
+    - aws ecs update-service \
+        --cluster $ECS_CLUSTER \
+        --service $ECS_SERVICE \
+        --force-new-deployment
