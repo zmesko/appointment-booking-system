@@ -38,3 +38,4 @@ deploy:
     - apt-get install -y awscli
   script:
     - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region $AWS_REGION --force-new-deployment
+  when: manual
